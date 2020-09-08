@@ -14,7 +14,7 @@ class App extends Component {
   //pass file to state
   onChangeHandler = event => {
     let files = event.target.files
-    if(this.maxSelectFile(event)) {
+    if(this.maxSelectFile(event) && this.checkMimeType(event)) {
       this.setState({
         selectedFile: files
       })
@@ -40,6 +40,24 @@ class App extends Component {
       const msg = 'Only 3 images can be uploaded at a time!'
       event.target.value = null
       console.log(msg)
+      return false;
+    }
+    return true;
+  }
+
+  //validation for file format
+  checkMimeType = event => {
+    let files = event.target.files
+    let err = ''
+    const types = ['image/png', 'image/jpeg', 'image/gif']
+    for(let i = 0; i < files.length; i++) {
+      if (types.every(type => files[i].type !== type)) {
+        err += files[i].type + ' is not a supported file type\n'
+      }
+    }
+    if ( err !== '') {
+      event.target.value =  null
+      console.log(err)
       return false;
     }
     return true;
