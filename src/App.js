@@ -13,14 +13,18 @@ class App extends Component {
   }
   //pass file to state
   onChangeHandler = event => {
-    this.setState({selectedFile: event.target.files[0],
-      loaded: 0,})
+    this.setState({selectedFile: event.target.files,
+    })
   }
   
   //sends request to server
   onClickHandler = () => {
     const data = new FormData()
-    data.append('file', this.state.selectedFile)
+    //loops through attached files
+    for (let i = 0; i < this.state.selectedFile.length; i++) {
+      data.append('file', this.state.selectedFile[i])
+    }
+    
     axios.post('http://localhost:8080/upload', data, {   
     }).then(res => console.log(res.statusText))
   }
@@ -34,7 +38,7 @@ class App extends Component {
             <form method="post" action="#" id="#">
               <div className="form-group files">
                 <label>Upload Your File </label>
-                <input type="file" className="form-control" onChange={this.onChangeHandler}/>
+                <input type="file" className="form-control" multiple onChange={this.onChangeHandler}/>
                 <button type="button" className='btn btn-success btn-lg btn-block' onClick={this.onClickHandler}>Upload</button>
               </div>
             </form>
