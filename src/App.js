@@ -13,10 +13,14 @@ class App extends Component {
   }
   //pass file to state
   onChangeHandler = event => {
-    this.setState({selectedFile: event.target.files,
-    })
+    let files = event.target.files
+    if(this.maxSelectFile(event)) {
+      this.setState({
+        selectedFile: files
+      })
+    }
   }
-  
+
   //sends request to server
   onClickHandler = () => {
     const data = new FormData()
@@ -24,9 +28,21 @@ class App extends Component {
     for (let i = 0; i < this.state.selectedFile.length; i++) {
       data.append('file', this.state.selectedFile[i])
     }
-    
-    axios.post('http://localhost:8080/upload', data, {   
+
+    axios.post('http://localhost:8080/upload', data, {
     }).then(res => console.log(res.statusText))
+  }
+
+  //seting max number of files that can be uploaded at a time(3)
+  maxSelectFile = event => {
+    let files = event.target.files
+    if (files.length > 3) {
+      const msg = 'Only 3 images can be uploaded at a time!'
+      event.target.value = null
+      console.log(msg)
+      return false;
+    }
+    return true;
   }
 
 
@@ -38,7 +54,7 @@ class App extends Component {
             <form method="post" action="#" id="#">
               <div className="form-group files">
                 <label>Upload Your File </label>
-                <input type="file" className="form-control" multiple onChange={this.onChangeHandler}/>
+                <input type="file" className="form-control" multiple onChange={this.onChangeHandler} />
                 <button type="button" className='btn btn-success btn-lg btn-block' onClick={this.onClickHandler}>Upload</button>
               </div>
             </form>
