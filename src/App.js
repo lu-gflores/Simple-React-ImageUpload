@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import axios from 'axios';
 import './App.css';
 
 class App extends Component {
@@ -15,6 +16,15 @@ class App extends Component {
     this.setState({selectedFile: event.target.files[0],
       loaded: 0,})
   }
+  
+  //sends request to server
+  onClickHandler = () => {
+    const data = new FormData()
+    data.append('file', this.state.selectedFile)
+    axios.post('http://localhost:8000/upload', data, {   
+    }).then(res => console.log(res.statusText))
+  }
+
 
   render() {
     return (
@@ -25,7 +35,7 @@ class App extends Component {
               <div className="form-group files">
                 <label>Upload Your File </label>
                 <input type="file" className="form-control" onChange={this.onChangeHandler}/>
-                <button type="button" className='btn btn-success btn-lg btn-block'>Upload</button>
+                <button type="button" className='btn btn-success btn-lg btn-block' onClick={this.onClickHandler}>Upload</button>
               </div>
             </form>
           </div>
