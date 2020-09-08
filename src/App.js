@@ -14,7 +14,7 @@ class App extends Component {
   //pass file to state
   onChangeHandler = event => {
     let files = event.target.files
-    if(this.maxSelectFile(event) && this.checkMimeType(event)) {
+    if(this.maxSelectFile(event) && this.checkMimeType(event) && this.checkFileSize(event)) {
       this.setState({
         selectedFile: files
       })
@@ -63,6 +63,23 @@ class App extends Component {
     return true;
   }
 
+  //checks for file size
+  checkFileSize = event => {
+    let files = event.target.files
+    let size = 800
+    let err =''
+    for(let i = 0; i < files.length; i++) {
+      if (files[i].size > size) {
+        err += files[i].type + ' is too large, please choose a smaller file\n'
+      }
+    }
+    if (err !== '') {
+      event.target.value = null
+      console.log(err)
+      return false
+    }
+     return true
+  }
 
   render() {
     return (
