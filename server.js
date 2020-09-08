@@ -8,7 +8,7 @@ app.use(cors())
 //multer instance
 const storage = multer.diskStorage({
     destination: function(req, file, cb) {
-        cb(null, 'null')
+        cb(null, 'public')
     },
     filename: function(req, file, cb) {
         cb(null, Date.now() + '-' + file.originalname)
@@ -28,3 +28,7 @@ app.post('/upload', function (req, res) {
         return res.status(200).send(req.file)
     })
 });
+
+app.listen(8080, function() {
+    console.log('App running on port 8080')
+})
