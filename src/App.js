@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
+import {Progress} from 'reactstrap'
 import './App.css';
 
 class App extends Component {
@@ -8,13 +9,14 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      selectedFile: null
+      selectedFile: null,
+      loaded: 0
     }
   }
   //pass file to state
   onChangeHandler = event => {
     let files = event.target.files
-    if(this.maxSelectFile(event) && this.checkMimeType(event) && this.checkFileSize(event)) {
+    if(this.maxSelectFile(event) && this.checkMimeType(event)) {
       this.setState({
         selectedFile: files
       })
@@ -30,6 +32,11 @@ class App extends Component {
     }
 
     axios.post('http://localhost:8080/upload', data, {
+      onUploadProgress: ProgressEvent => {
+        this.setState({
+          loaded: (ProgressEvent.loaded / ProgressEvent.total * 100),
+        })
+      }
     }).then(res => console.log(res.statusText))
   }
 
@@ -66,13 +73,13 @@ class App extends Component {
   //checks for file size
   checkFileSize = event => {
     let files = event.target.files
-    let size = 800
+    let size = 15000
     let err =''
     for(let i = 0; i < files.length; i++) {
       if (files[i].size > size) {
         err += files[i].type + ' is too large, please choose a smaller file\n'
       }
-    }
+    };
     if (err !== '') {
       event.target.value = null
       console.log(err)
@@ -91,6 +98,9 @@ class App extends Component {
                 <label>Upload Your File </label>
                 <input type="file" className="form-control" multiple onChange={this.onChangeHandler} />
                 <button type="button" className='btn btn-success btn-lg btn-block' onClick={this.onClickHandler}>Upload</button>
+              </div>
+              <div className='form-group'>
+                <Progress max= '100' color='success' value = {this.state.loaded}>{Math.round(this.state.loaded, 2 )} %</Progress>
               </div>
             </form>
           </div>
