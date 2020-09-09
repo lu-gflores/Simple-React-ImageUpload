@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import {Progress} from 'reactstrap'
+import {ToastContainer, toast} from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 import './App.css';
 
 class App extends Component {
@@ -30,14 +32,28 @@ class App extends Component {
     for (let i = 0; i < this.state.selectedFile.length; i++) {
       data.append('file', this.state.selectedFile[i])
     }
-
+    toast('Uploading', {
+      position: "bottom-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      });
     axios.post('http://localhost:8080/upload', data, {
       onUploadProgress: ProgressEvent => {
         this.setState({
           loaded: (ProgressEvent.loaded / ProgressEvent.total * 100),
         })
       }
-    }).then(res => console.log(res.statusText))
+    }).then(res => {
+      toast.success('upload success')
+    }).catch(err => {
+      toast.error('upload failed...')
+    })
+
+      
   }
 
   //seting max number of files that can be uploaded at a time(3)
@@ -87,6 +103,8 @@ class App extends Component {
     }
      return true
   }
+  //toast
+    
 
   render() {
     return (
@@ -102,6 +120,10 @@ class App extends Component {
               <div className='form-group'>
                 <Progress max= '100' color='success' value = {this.state.loaded}>{Math.round(this.state.loaded, 2 )} %</Progress>
               </div>
+              <div className='form-group'>
+                <ToastContainer/>
+              </div>
+
             </form>
           </div>
         </div>
