@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import {Progress} from 'reactstrap'
-import {ToastContainer, toast} from 'react-toastify'
+import { Progress } from 'reactstrap'
+import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import './App.css';
 
@@ -18,7 +18,7 @@ class App extends Component {
   //pass file to state
   onChangeHandler = event => {
     let files = event.target.files
-    if(this.maxSelectFile(event) && this.checkMimeType(event)) {
+    if (this.maxSelectFile(event) && this.checkMimeType(event)) {
       this.setState({
         selectedFile: files
       })
@@ -40,7 +40,7 @@ class App extends Component {
       pauseOnHover: true,
       draggable: true,
       progress: undefined,
-      });
+    });
     axios.post('http://localhost:8080/upload', data, {
       onUploadProgress: ProgressEvent => {
         this.setState({
@@ -53,7 +53,7 @@ class App extends Component {
       toast.error('upload failed...')
     })
 
-      
+
   }
 
   //seting max number of files that can be uploaded at a time(3)
@@ -62,7 +62,7 @@ class App extends Component {
     if (files.length > 3) {
       const msg = 'Only 3 images can be uploaded at a time!'
       event.target.value = null
-      console.log(msg)
+      toast.warn(msg)
       return false;
     }
     return true;
@@ -73,16 +73,21 @@ class App extends Component {
     let files = event.target.files
     let err = ''
     const types = ['image/png', 'image/jpeg', 'image/gif']
-    for(let i = 0; i < files.length; i++) {
+    for (let i = 0; i < files.length; i++) {
       if (types.every(type => files[i].type !== type)) {
         err += files[i].type + ' is not a supported file type\n'
       }
     }
-    if ( err !== '') {
-      event.target.value =  null
-      console.log(err)
-      return false;
+    //looping through toast message
+    for (let i = 0; i < err.length; i++) {
+      event.target.value = null
+      toast.error(err[i])
     }
+    // if ( err !== '') {
+    //   event.target.value =  null
+    //   console.log(err)
+    //   return false;
+    // }
     return true;
   }
 
@@ -90,21 +95,25 @@ class App extends Component {
   checkFileSize = event => {
     let files = event.target.files
     let size = 15000
-    let err =''
-    for(let i = 0; i < files.length; i++) {
+    let err = ''
+    for (let i = 0; i < files.length; i++) {
       if (files[i].size > size) {
         err += files[i].type + ' is too large, please choose a smaller file\n'
       }
     };
-    if (err !== '') {
+    for(let i = 0; i < err.length; i++) {
+      toast.error(err[i])
       event.target.value = null
-      console.log(err)
-      return false
     }
-     return true
+    // if (err !== '') {
+    //   event.target.value = null
+    //   console.log(err)
+    //   return false
+    // }
+    return true
   }
   //toast
-    
+
 
   render() {
     return (
@@ -118,10 +127,10 @@ class App extends Component {
                 <button type="button" className='btn btn-success btn-lg btn-block' onClick={this.onClickHandler}>Upload</button>
               </div>
               <div className='form-group'>
-                <Progress max= '100' color='success' value = {this.state.loaded}>{Math.round(this.state.loaded, 2 )} %</Progress>
+                <Progress max='100' color='success' value={this.state.loaded}>{Math.round(this.state.loaded, 2)} %</Progress>
               </div>
               <div className='form-group'>
-                <ToastContainer/>
+                <ToastContainer />
               </div>
 
             </form>
